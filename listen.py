@@ -11,7 +11,11 @@ import urllib.request
 BASE_DIR = os.getcwd()
 ROBOT36_DIR = os.path.join(BASE_DIR, 'robot36')
 SERVER_URL = 'http://192.168.0.235:8000/api/images/'
+USERNAME = 'station'
+PASSWORD = 'RaspberryPi'
 CALLSIGN = "W9WJK"
+
+camera = PiCamera()
 
 def sstv_decode():
     os.chdir(ROBOT36_DIR)
@@ -21,7 +25,7 @@ def sstv_decode():
     subprocess.call(['ffmpeg', '-i', 'newimage.ppm', filename])
     upload_image = open(filename, 'rb')
     data = {'photo':upload_image}
-    post_request = requests.post(SERVER_URL, files=data)
+    post_request = requests.post(SERVER_URL, files=data, auth=(USERNAME, PASSWORD))
     os.remove(filename)
 
 def speak(words):
@@ -47,7 +51,6 @@ def create_ppm(filename):
 
 def take_new_photo():
     os.chdir(ROBOT36_DIR)
-    camera = PiCamera()
     filename = os.path.join(ROBOT36_DIR, 'capture.jpg')
     camera.capture(filename)
     return(create_ppm(filename))
